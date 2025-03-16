@@ -30,7 +30,7 @@ require (
 	github.com/distribution/reference v0.6.0
 	github.com/docker/distribution v2.8.3+incompatible
 	github.com/elazarl/goproxy v0.0.0-20231117061959-7cc037d33fb5
-	github.com/evanphx/json-patch/v5 v5.9.0
+	github.com/evanphx/json-patch/v5 v5.9.11
 	github.com/go-jose/go-jose/v3 v3.0.4
 	github.com/go-logr/logr v1.4.2
 	github.com/go-logr/zapr v1.3.0
@@ -56,7 +56,7 @@ require (
 	github.com/operator-framework/api v0.22.0
 	github.com/pkg/errors v0.9.1
 	github.com/ppc64le-cloud/powervs-utils v0.0.0-20240610070307-1c0d75a5c247
-	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.74.0
+	github.com/prometheus-operator/prometheus-operator/pkg/apis/monitoring v0.81.0
 	github.com/prometheus/client_golang v1.20.5
 	github.com/prometheus/client_model v0.6.1
 	github.com/prometheus/common v0.61.0
@@ -99,10 +99,10 @@ require (
 	sigs.k8s.io/cluster-api-provider-ibmcloud v0.7.0
 	sigs.k8s.io/cluster-api-provider-kubevirt v0.1.9
 	sigs.k8s.io/cluster-api-provider-openstack v0.12.1
-	sigs.k8s.io/controller-runtime v0.19.5
+	sigs.k8s.io/controller-runtime v0.20.3
 	sigs.k8s.io/karpenter v1.0.5
 	sigs.k8s.io/secrets-store-csi-driver v1.4.8
-	sigs.k8s.io/structured-merge-diff/v4 v4.4.2
+	sigs.k8s.io/structured-merge-diff/v4 v4.5.0
 	sigs.k8s.io/yaml v1.4.0
 )
 
@@ -163,7 +163,7 @@ require (
 	github.com/golang-jwt/jwt/v4 v4.5.1 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/google/btree v1.1.2 // indirect
+	github.com/google/btree v1.1.3 // indirect
 	github.com/google/gnostic-models v0.6.9-0.20230804172637-c7be7c783f49 // indirect
 	github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad // indirect
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510 // indirect
@@ -253,7 +253,7 @@ require (
 	knative.dev/pkg v0.0.0-20231010144348-ca8c009405dd // indirect
 	kubevirt.io/controller-lifecycle-operator-sdk/api v0.0.0-20220329064328-f3cc58c6ed90 // indirect
 	sigs.k8s.io/apiserver-network-proxy/konnectivity-client v0.31.0 // indirect
-	sigs.k8s.io/json v0.0.0-20241010143419-9aa6b5e7a4b3 // indirect
+	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/kube-storage-version-migrator v0.0.6-0.20230721195810-5c8923c5ff96 // indirect
 	sigs.k8s.io/kustomize/api v0.18.0 // indirect
 	sigs.k8s.io/kustomize/kyaml v0.18.1 // indirect
