@@ -26,7 +26,7 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 
 	"github.com/onsi/gomega/format"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 	kubevirtv1 "kubevirt.io/api/core/v1"
 )
 

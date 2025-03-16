@@ -6,7 +6,7 @@ import (
 	"io"
 	"testing"
 
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func ExecuteTestCommand(args []string) ([]byte, error) {
