@@ -1,6 +1,8 @@
 module github.com/openshift-hive/hypershift/hack/tools
 
-go 1.19
+go 1.23
+
+toolchain go1.23.7
 
 require (
 	github.com/ahmetb/gen-crd-api-reference-docs v0.3.0
@@ -171,7 +173,7 @@ require (
 	k8s.io/klog/v2 v2.90.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20230308215209-15aac26d736a // indirect
 	k8s.io/utils v0.0.0-20230308161112-d77c459e9343 // indirect
-	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
+	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
