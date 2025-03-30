@@ -166,7 +166,7 @@ require (
 	k8s.io/apiextensions-apiserver v0.27.1 // indirect
 	k8s.io/apimachinery v0.27.1 // indirect
 	k8s.io/client-go v0.27.1 // indirect
-	k8s.io/gengo v0.0.0-20220902162205-c0856e24416d // indirect
+	k8s.io/gengo v0.0.0-20250207200755-1244d31929d7 // indirect
 	k8s.io/klog v1.0.0 // indirect
 	k8s.io/klog/v2 v2.90.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20230308215209-15aac26d736a // indirect

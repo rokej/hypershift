@@ -1158,7 +1158,7 @@ k8s.io/client-go/util/flowcontrol
 k8s.io/client-go/util/homedir
 k8s.io/client-go/util/keyutil
 k8s.io/client-go/util/workqueue
-# k8s.io/gengo v0.0.0-20220902162205-c0856e24416d
+# k8s.io/gengo v0.0.0-20250207200755-1244d31929d7
 ## explicit; go 1.13
 k8s.io/gengo/parser
 k8s.io/gengo/types
