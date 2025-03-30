@@ -43,7 +43,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-prometheus v1.2.0
 	github.com/k-orc/openstack-resource-controller v1.0.0
 	github.com/kubernetes-csi/external-snapshotter/client/v6 v6.3.0
-	github.com/onsi/gomega v1.36.2
+	github.com/onsi/gomega v1.36.3
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.0
 	github.com/openshift/api v0.0.0-20250130171037-7bb8a0201a56
@@ -244,7 +244,7 @@ require (
 	google.golang.org/genproto v0.0.0-20250115164207-1a7da9e5054f // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20250115164207-1a7da9e5054f // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250115164207-1a7da9e5054f // indirect
-	google.golang.org/protobuf v1.36.4 // indirect
+	google.golang.org/protobuf v1.36.5 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
