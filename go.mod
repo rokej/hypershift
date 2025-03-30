@@ -109,7 +109,7 @@ require (
 	github.com/chai2010/gettext-go v1.0.2 // indirect
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/coreos/go-systemd/v22 v22.3.2 // indirect
-	github.com/coreos/vcontext v0.0.0-20211021162308-f1dbbca7bef4 // indirect
+	github.com/coreos/vcontext v0.0.0-20231102161604-685dc7299dc5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
 	github.com/docker/go-metrics v0.0.1 // indirect
