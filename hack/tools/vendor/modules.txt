@@ -1157,8 +1157,8 @@ github.com/stretchr/testify/mock
 # github.com/subosito/gotenv v1.4.1
 ## explicit; go 1.18
 github.com/subosito/gotenv
-# github.com/tdakkota/asciicheck v0.3.0
-## explicit; go 1.18
+# github.com/tdakkota/asciicheck v0.4.1
+## explicit; go 1.22.0
 github.com/tdakkota/asciicheck
 # github.com/tetafro/godot v1.4.20
 ## explicit; go 1.20
