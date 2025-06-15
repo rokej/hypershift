@@ -78,8 +78,8 @@ github.com/Microsoft/go-winio/internal/fs
 github.com/Microsoft/go-winio/internal/socket
 github.com/Microsoft/go-winio/internal/stringbuffer
 github.com/Microsoft/go-winio/pkg/guid
-# github.com/OpenPeeDeeP/depguard/v2 v2.2.0
-## explicit; go 1.20
+# github.com/OpenPeeDeeP/depguard/v2 v2.2.1
+## explicit; go 1.23.0
 github.com/OpenPeeDeeP/depguard/v2
 github.com/OpenPeeDeeP/depguard/v2/internal/utils
 # github.com/ProtonMail/go-crypto v1.1.3
