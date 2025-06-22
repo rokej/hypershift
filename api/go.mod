@@ -3,7 +3,7 @@ module github.com/openshift/hypershift/api
 go 1.23.6
 
 require (
-	github.com/aws/karpenter-provider-aws v1.0.8
+	github.com/aws/karpenter-provider-aws v1.5.1
 	github.com/openshift/api v0.0.0-20250609083529-2b129d95495e
 	k8s.io/api v0.32.2
 	k8s.io/apimachinery v0.32.2
