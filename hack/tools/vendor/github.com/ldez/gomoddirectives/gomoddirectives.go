@@ -2,6 +2,7 @@
 package gomoddirectives
 
 import (
+	"context"
 	"fmt"
 	"go/token"
 	"regexp"
@@ -13,17 +14,18 @@ import (
 )
 
 const (
-	reasonRetract          = "a comment is mandatory to explain why the version has been retracted"
 	reasonExclude          = "exclude directive is not allowed"
-	reasonToolchain        = "toolchain directive is not allowed"
-	reasonToolchainPattern = "toolchain directive (%s) doesn't match the pattern '%s'"
-	reasonTool             = "tool directive is not allowed"
 	reasonGoDebug          = "godebug directive is not allowed"
 	reasonGoVersion        = "go directive (%s) doesn't match the pattern '%s'"
-	reasonReplaceLocal     = "local replacement are not allowed"
+	reasonIgnore           = "ignore directive is not allowed"
 	reasonReplace          = "replacement are not allowed"
-	reasonReplaceIdentical = "the original module and the replacement are identical"
 	reasonReplaceDuplicate = "multiple replacement of the same module"
+	reasonReplaceIdentical = "the original module and the replacement are identical"
+	reasonReplaceLocal     = "local replacement are not allowed"
+	reasonRetract          = "a comment is mandatory to explain why the version has been retracted"
+	reasonTool             = "tool directive is not allowed"
+	reasonToolchain        = "toolchain directive is not allowed"
+	reasonToolchainPattern = "toolchain directive (%s) doesn't match the pattern '%s'"
 )
 
 // Result the analysis result.
@@ -51,6 +53,7 @@ type Options struct {
 	ReplaceAllowList          []string
 	ReplaceAllowLocal         bool
 	ExcludeForbidden          bool
+	IgnoreForbidden           bool
 	RetractAllowNoExplanation bool
 	ToolchainForbidden        bool
 	ToolchainPattern          *regexp.Regexp
@@ -61,12 +64,13 @@ type Options struct {
 
 // AnalyzePass analyzes a pass.
 func AnalyzePass(pass *analysis.Pass, opts Options) ([]Result, error) {
-	info, err := gomod.GetModuleInfo()
+	info, err := gomod.GetModuleInfo(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("get information about modules: %w", err)
 	}
 
 	goMod := info[0].GoMod
+
 	if pass.Module != nil && pass.Module.Path != "" {
 		for _, m := range info {
 			if m.Path == pass.Module.Path {
@@ -100,6 +104,7 @@ func AnalyzeFile(file *modfile.File, opts Options) []Result {
 		checkRetractDirectives,
 		checkExcludeDirectives,
 		checkToolDirectives,
+		checkIgnoreDirectives,
 		checkReplaceDirectives,
 		checkToolchainDirective,
 		checkGoDebugDirectives,
@@ -169,6 +174,20 @@ func checkExcludeDirectives(file *modfile.File, opts Options) []Result {
 
 	for _, exclude := range file.Exclude {
 		results = append(results, NewResult(file, exclude.Syntax, reasonExclude))
+	}
+
+	return results
+}
+
+func checkIgnoreDirectives(file *modfile.File, opts Options) []Result {
+	if !opts.IgnoreForbidden {
+		return nil
+	}
+
+	var results []Result
+
+	for _, exclude := range file.Ignore {
+		results = append(results, NewResult(file, exclude.Syntax, reasonIgnore))
 	}
 
 	return results
