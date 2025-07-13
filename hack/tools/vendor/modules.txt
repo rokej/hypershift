@@ -723,8 +723,8 @@ github.com/gordonklaus/ineffassign/pkg/ineffassign
 # github.com/gostaticanalysis/analysisutil v0.7.1
 ## explicit; go 1.16
 github.com/gostaticanalysis/analysisutil
-# github.com/gostaticanalysis/comment v1.4.2
-## explicit; go 1.15
+# github.com/gostaticanalysis/comment v1.5.0
+## explicit; go 1.22.9
 github.com/gostaticanalysis/comment
 github.com/gostaticanalysis/comment/passes/commentmap
 # github.com/gostaticanalysis/forcetypeassert v0.1.0
@@ -804,8 +804,8 @@ github.com/kevinburke/ssh_config
 # github.com/kisielk/errcheck v1.8.0
 ## explicit; go 1.18
 github.com/kisielk/errcheck/errcheck
-# github.com/kkHAIKE/contextcheck v1.1.5
-## explicit; go 1.20
+# github.com/kkHAIKE/contextcheck v1.1.6
+## explicit; go 1.23.0
 github.com/kkHAIKE/contextcheck
 # github.com/krishicks/yaml-patch v0.0.10
 ## explicit
