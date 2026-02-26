@@ -3,7 +3,9 @@ package azure
 import (
 	hypershiftazure "github.com/openshift/hypershift/cmd/cluster/azure"
 	"github.com/openshift/hypershift/cmd/cluster/core"
+	"github.com/openshift/hypershift/cmd/log"
 	"github.com/openshift/hypershift/cmd/util"
+	"github.com/openshift/hypershift/product-cli/pkg/maestro"
 
 	"github.com/spf13/cobra"
 )
@@ -24,7 +26,15 @@ func NewDestroyCommand(opts *core.DestroyOptions) *cobra.Command {
 	_ = cmd.MarkFlagRequired("azure-creds")
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		return hypershiftazure.DestroyCluster(cmd.Context(), opts)
+		ctx := cmd.Context()
+		if done, err := maestro.DestroyViaMaestro(ctx, opts); done {
+			if err != nil {
+				log.Log.Error(err, "Failed to delete ManifestWork from Maestro")
+				return err
+			}
+			return nil
+		}
+		return hypershiftazure.DestroyCluster(ctx, opts)
 	}
 
 	return cmd

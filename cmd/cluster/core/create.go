@@ -154,6 +154,13 @@ type RawCreateOptions struct {
 	Render                           bool
 	RenderInto                       string
 	RenderSensitive                  bool
+	TargetCluster                    string
+
+	// Maestro apply options: when set with TargetCluster, apply rendered output to Maestro
+	MaestroServer      string
+	MaestroGRPCServer  string
+	MaestroConsumer    string
+	MaestroInsecureTLS bool
 	SSHKeyFile                       string
 	ServiceCIDR                      []string
 	ClusterCIDR                      []string

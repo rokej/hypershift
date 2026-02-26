@@ -4,6 +4,7 @@ import (
 	"github.com/openshift/hypershift/cmd/cluster/core"
 	"github.com/openshift/hypershift/cmd/cluster/none"
 	"github.com/openshift/hypershift/cmd/log"
+	"github.com/openshift/hypershift/product-cli/pkg/maestro"
 
 	"github.com/spf13/cobra"
 )
@@ -16,7 +17,16 @@ func NewDestroyCommand(opts *core.DestroyOptions) *cobra.Command {
 	}
 
 	cmd.RunE = func(cmd *cobra.Command, args []string) error {
-		if err := none.DestroyCluster(cmd.Context(), opts); err != nil {
+		ctx := cmd.Context()
+		if done, err := maestro.DestroyViaMaestro(ctx, opts); done {
+			if err != nil {
+				log.Log.Error(err, "Failed to delete ManifestWork from Maestro")
+				return err
+			}
+			return nil
+		}
+
+		if err := none.DestroyCluster(ctx, opts); err != nil {
 			log.Log.Error(err, "Failed to destroy cluster")
 			return err
 		}

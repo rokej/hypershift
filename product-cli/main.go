@@ -24,6 +24,8 @@ import (
 	cliversion "github.com/openshift/hypershift/cmd/version"
 	"github.com/openshift/hypershift/product-cli/cmd/create"
 	"github.com/openshift/hypershift/product-cli/cmd/destroy"
+	"github.com/openshift/hypershift/product-cli/cmd/get"
+	"github.com/openshift/hypershift/product-cli/cmd/list"
 
 	"github.com/spf13/cobra"
 )
@@ -46,6 +48,8 @@ func main() {
 
 	cmd.AddCommand(create.NewCommand())
 	cmd.AddCommand(destroy.NewCommand())
+	cmd.AddCommand(get.NewCommand())
+	cmd.AddCommand(list.NewCommand())
 	cmd.AddCommand(cliversion.NewVersionCommand())
 
 	sigs := make(chan os.Signal, 1)

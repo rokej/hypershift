@@ -44,6 +44,12 @@ type DestroyOptions struct {
 	Log                   logr.Logger
 	CredentialSecretName  string
 	RedactBaseDomain      bool
+
+	// Maestro destroy options: when set, delete ManifestWork from Maestro instead of management cluster
+	MaestroServer      string
+	MaestroGRPCServer  string
+	MaestroConsumer    string
+	MaestroInsecureTLS bool
 }
 
 type AWSPlatformDestroyOptions struct {

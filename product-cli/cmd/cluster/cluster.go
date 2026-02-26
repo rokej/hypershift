@@ -59,6 +59,10 @@ func NewDestroyCommands() *cobra.Command {
 	cmd.PersistentFlags().StringVar(&opts.InfraID, "infra-id", opts.InfraID, "The HostedCluster's infrastructure ID. This is inferred from the HostedCluster by default.")
 	cmd.PersistentFlags().StringVar(&opts.Name, "name", opts.Name, "The HostedCluster's name.")
 	cmd.PersistentFlags().StringVar(&opts.Namespace, "namespace", opts.Namespace, "The HostedCluster's namespace name.")
+	cmd.PersistentFlags().StringVar(&opts.MaestroServer, "maestro-server", opts.MaestroServer, "Maestro HTTP API URL. When set, deletes the ManifestWork from Maestro instead of the management cluster")
+	cmd.PersistentFlags().StringVar(&opts.MaestroGRPCServer, "maestro-grpc-server", opts.MaestroGRPCServer, "Maestro gRPC server address (default: 127.0.0.1:8090)")
+	cmd.PersistentFlags().StringVar(&opts.MaestroConsumer, "maestro-consumer", opts.MaestroConsumer, "Maestro consumer (cluster) name. Required when using --maestro-server")
+	cmd.PersistentFlags().BoolVar(&opts.MaestroInsecureTLS, "maestro-insecure-skip-verify", opts.MaestroInsecureTLS, "Skip TLS verification for Maestro HTTP API")
 
 	_ = cmd.MarkPersistentFlagRequired("name")
 
