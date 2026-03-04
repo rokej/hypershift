@@ -22,10 +22,12 @@ import (
 	"syscall"
 
 	cliversion "github.com/openshift/hypershift/cmd/version"
+	"github.com/openshift/hypershift/product-cli/cmd/apply"
 	"github.com/openshift/hypershift/product-cli/cmd/create"
 	"github.com/openshift/hypershift/product-cli/cmd/destroy"
 	"github.com/openshift/hypershift/product-cli/cmd/get"
 	"github.com/openshift/hypershift/product-cli/cmd/list"
+	"github.com/openshift/hypershift/product-cli/cmd/patch"
 
 	"github.com/spf13/cobra"
 )
@@ -46,10 +48,12 @@ func main() {
 
 	defer cancel()
 
+	cmd.AddCommand(apply.NewCommand())
 	cmd.AddCommand(create.NewCommand())
 	cmd.AddCommand(destroy.NewCommand())
 	cmd.AddCommand(get.NewCommand())
 	cmd.AddCommand(list.NewCommand())
+	cmd.AddCommand(patch.NewCommand())
 	cmd.AddCommand(cliversion.NewVersionCommand())
 
 	sigs := make(chan os.Signal, 1)

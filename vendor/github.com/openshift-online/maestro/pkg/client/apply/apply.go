@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"strings"
 	"time"
 
+	jsonpatch "github.com/evanphx/json-patch/v5"
 	"github.com/openshift-online/maestro/pkg/api/openapi"
 	"github.com/openshift-online/maestro/pkg/client/cloudevents/grpcsource"
 	"github.com/openshift-online/ocm-sdk-go/logging"
@@ -165,6 +167,96 @@ func GetManifestWork(ctx context.Context, opts Options) (*workv1.ManifestWork, e
 		return nil, fmt.Errorf("get work: %w", err)
 	}
 	return mw, nil
+}
+
+// PatchHostedClusterInWork applies a JSON merge patch to the HostedCluster in the ManifestWork
+// and updates the work in Maestro. patchJSON is RFC 7396 merge patch format.
+func PatchHostedClusterInWork(ctx context.Context, opts Options, patchJSON []byte) error {
+	if opts.ConsumerName == "" {
+		return fmt.Errorf("consumer name is required")
+	}
+	if opts.WorkName == "" {
+		return fmt.Errorf("work name is required")
+	}
+
+	mw, err := GetManifestWork(ctx, opts)
+	if err != nil {
+		return err
+	}
+
+	// Find and patch HostedCluster in manifests
+	patched := false
+	for i := range mw.Spec.Workload.Manifests {
+		m := &mw.Spec.Workload.Manifests[i]
+		var obj *unstructured.Unstructured
+		if m.RawExtension.Object != nil {
+			if u, ok := m.RawExtension.Object.(*unstructured.Unstructured); ok {
+				obj = u
+			}
+		}
+		if obj == nil && m.RawExtension.Raw != nil {
+			obj = &unstructured.Unstructured{}
+			if err := json.Unmarshal(m.RawExtension.Raw, obj); err != nil {
+				continue
+			}
+		}
+		if obj == nil {
+			continue
+		}
+		gvk := obj.GroupVersionKind()
+		if gvk.Kind != "HostedCluster" || gvk.Group != "hypershift.openshift.io" {
+			continue
+		}
+
+		// Apply merge patch
+		docData, err := json.Marshal(obj.Object)
+		if err != nil {
+			return fmt.Errorf("marshal HostedCluster: %w", err)
+		}
+		merged, err := jsonpatch.MergePatch(docData, patchJSON)
+		if err != nil {
+			return fmt.Errorf("apply patch: %w", err)
+		}
+		var mergedObj map[string]interface{}
+		if err := json.Unmarshal(merged, &mergedObj); err != nil {
+			return fmt.Errorf("unmarshal patched HostedCluster: %w", err)
+		}
+		obj.Object = mergedObj
+
+		// Update the manifest
+		raw, err := json.Marshal(obj)
+		if err != nil {
+			return fmt.Errorf("marshal patched HostedCluster: %w", err)
+		}
+		m.RawExtension = runtime.RawExtension{Raw: raw, Object: obj}
+		patched = true
+		break
+	}
+
+	if !patched {
+		return fmt.Errorf("no HostedCluster found in ManifestWork %q", opts.WorkName)
+	}
+
+	// Patch the work in Maestro
+	workClient, err := newWorkClient(ctx, opts)
+	if err != nil {
+		return fmt.Errorf("create work client: %w", err)
+	}
+
+	existing, err := workClient.ManifestWorks(opts.ConsumerName).Get(ctx, opts.WorkName, metav1.GetOptions{})
+	if err != nil {
+		return fmt.Errorf("get work: %w", err)
+	}
+
+	patchData, err := grpcsource.ToWorkPatch(existing, mw)
+	if err != nil {
+		return fmt.Errorf("build patch: %w", err)
+	}
+	_, err = workClient.ManifestWorks(opts.ConsumerName).Patch(ctx, opts.WorkName, types.MergePatchType, patchData, metav1.PatchOptions{})
+	if err != nil {
+		return fmt.Errorf("patch work: %w", err)
+	}
+	return nil
 }
 
 // DeleteManifestWork deletes a ManifestWork from Maestro for the given consumer.
