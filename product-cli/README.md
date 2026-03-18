@@ -43,24 +43,22 @@ hcp create cluster kubevirt \
 
 ---
 
-### Import (Discover Existing Clusters)
+### Discover (Existing Clusters)
 
-Import HostedClusters that were created outside of Maestro so they appear in `hcp list clusters`:
+Discover HostedClusters that were created outside of Maestro so they appear in `hcp list clusters`. The discover command creates a **ReadOnly** ManifestWork -- the Maestro agent observes the live resource and reports status without modifying it. This avoids SSA field ownership conflicts.
 
 ```bash
-# 1. Port-forward Maestro gRPC
-oc port-forward svc/maestro-grpc 8090:8090 -n maestro &
-
-# 2. Export the HostedCluster from the consumer cluster (mce-1)
-oc get hostedcluster virt-hcp-1 -n clusters -o yaml > virt-hcp-1.yaml
-
-# 3. Apply to Maestro (optionally edit to remove status, resourceVersion, uid)
-hcp apply manifests virt-hcp-1.yaml \
+hcp discover cluster virt-hcp-2 \
+  --namespace clusters \
   --maestro-server https://maestro.example.com \
   --maestro-consumer mce-1
 ```
 
-The imported cluster will now appear when running `hcp list clusters`.
+| Flag | Description |
+|------|-------------|
+| `-n`, `--namespace` | Namespace of the HostedCluster on the consumer cluster (default: `clusters`) |
+
+The discovered cluster will now appear when running `hcp list clusters` with full status (VERSION, PROGRESS, AVAILABLE, etc.). Since the ManifestWork uses ReadOnly strategy with Orphan delete policy, removing the discovery from Maestro will not affect the actual HostedCluster on the consumer cluster.
 
 ---
 
@@ -114,13 +112,23 @@ hcp list clusters --maestro-server https://maestro.example.com
 
 ### Get
 
-Get HostedCluster resource and status from Maestro.
+Get HostedCluster resource and status from Maestro. By default, displays a summary table matching the `oc get hostedcluster` format. Use `-o yaml` for the full YAML output.
 
 ```bash
+# Table output (default)
 hcp get cluster mycluster \
   --maestro-server https://maestro.example.com \
   --maestro-consumer my-management-cluster
+
+# Full YAML output
+hcp get cluster mycluster -o yaml \
+  --maestro-server https://maestro.example.com \
+  --maestro-consumer my-management-cluster
 ```
+
+| Flag | Description |
+|------|-------------|
+| `-o`, `--output` | Output format: table (default) or yaml |
 
 ---
 
@@ -136,6 +144,162 @@ hcp destroy cluster kubevirt \
 ```
 
 When `--maestro-server` is set, the destroy command deletes the ManifestWork from Maestro instead of applying directly to the management cluster.
+
+---
+
+## Example Session
+
+Below is a sample session showing create, list, get operations against a Maestro server.
+
+### Create a KubeVirt HostedCluster
+
+```bash
+./hcp create cluster kubevirt \
+  --name my-cluster \
+  --target-cluster mgmt-cluster-1 \
+  --maestro-server https://maestro.example.com \
+  --maestro-consumer mgmt-cluster-1 \
+  --maestro-insecure-skip-verify \
+  --pull-secret /path/to/pull-secret.txt \
+  --ssh-key ~/.ssh/id_rsa.pub \
+  --node-pool-replicas 2 \
+  --release-image quay.io/openshift-release-dev/ocp-release:4.21.3-multi \
+  --memory 6Gi \
+  --cores 2 \
+  --infra-availability-policy SingleReplica \
+  --control-plane-availability-policy SingleReplica
+```
+
+```
+I0301 10:48:42.792150   12345 protocol.go:126] "subscribing events for source" source="mw-client-example" eventDataType="io.open-cluster-management.works.v1alpha1.manifestbundles"
+I0301 10:48:43.381547   12345 protocol.go:93] "publishing event" messageID="a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+{"level":"info","ts":"2026-03-01T10:48:43-05:00","msg":"Applied manifests to Maestro","consumer":"mgmt-cluster-1","file":"mgmt-cluster-1.yaml"}
+```
+
+### Discover an existing HostedCluster
+
+```bash
+./hcp discover cluster existing-cluster \
+  --namespace clusters \
+  --maestro-server https://maestro.example.com \
+  --maestro-consumer mgmt-cluster-1 \
+  --maestro-insecure-skip-verify
+```
+
+```
+Discovered HostedCluster clusters/existing-cluster from consumer mgmt-cluster-1 (read-only)
+```
+
+### List clusters for a specific consumer
+
+```bash
+./hcp list clusters \
+  --maestro-server https://maestro.example.com \
+  --maestro-consumer mgmt-cluster-1 \
+  --maestro-insecure-skip-verify
+```
+
+```
+NAMESPACE   NAME         VERSION   KUBECONFIG                    PROGRESS    AVAILABLE   PROGRESSING   MESSAGE
+clusters    my-cluster   4.21.3    my-cluster-admin-kubeconfig   Completed   True        False         The hosted control plane is available
+```
+
+### List clusters across all consumers
+
+```bash
+./hcp list clusters \
+  --maestro-server https://maestro.example.com \
+  --maestro-insecure-skip-verify
+```
+
+```
+NAMESPACE   NAME         CONSUMER         VERSION   KUBECONFIG                    PROGRESS    AVAILABLE   PROGRESSING   MESSAGE
+clusters    my-cluster   mgmt-cluster-1   4.21.3    my-cluster-admin-kubeconfig   Completed   True        False         The hosted control plane is available
+```
+
+### Get cluster details (table)
+
+```bash
+./hcp get cluster my-cluster \
+  --maestro-server https://maestro.example.com \
+  --maestro-insecure-skip-verify \
+  --maestro-consumer mgmt-cluster-1
+```
+
+```
+NAMESPACE   NAME         VERSION   KUBECONFIG                    PROGRESS    AVAILABLE   PROGRESSING   MESSAGE
+clusters    my-cluster   4.21.3    my-cluster-admin-kubeconfig   Completed   True        False         The hosted control plane is available
+```
+
+### Get cluster details (YAML)
+
+```bash
+./hcp get cluster my-cluster -o yaml \
+  --maestro-server https://maestro.example.com \
+  --maestro-insecure-skip-verify \
+  --maestro-consumer mgmt-cluster-1
+```
+
+```yaml
+---
+# HostedCluster spec and status from Maestro ManifestWork
+---
+apiVersion: hypershift.openshift.io/v1beta1
+kind: HostedCluster
+metadata:
+  name: my-cluster
+  namespace: clusters
+spec:
+  autoscaling: {}
+  capabilities: {}
+  configuration: {}
+  controllerAvailabilityPolicy: SingleReplica
+  dns:
+    baseDomain: ""
+  etcd:
+    managed:
+      storage:
+        persistentVolume:
+          size: 8Gi
+        type: PersistentVolume
+    managementType: Managed
+  fips: false
+  infraID: my-cluster-ab1cd
+  infrastructureAvailabilityPolicy: SingleReplica
+  networking:
+    clusterNetwork:
+    - cidr: 10.132.0.0/14
+    networkType: OVNKubernetes
+    serviceNetwork:
+    - cidr: 172.31.0.0/16
+  olmCatalogPlacement: management
+  platform:
+    kubevirt:
+      baseDomainPassthrough: true
+    type: KubeVirt
+  pullSecret:
+    name: my-cluster-pull-secret
+  release:
+    image: quay.io/openshift-release-dev/ocp-release:4.21.3-multi
+  secretEncryption:
+    aescbc:
+      activeKey:
+        name: my-cluster-etcd-encryption-key
+    type: aescbc
+  services:
+  - service: APIServer
+    servicePublishingStrategy:
+      type: LoadBalancer
+  - service: Ignition
+    servicePublishingStrategy:
+      type: Route
+  - service: Konnectivity
+    servicePublishingStrategy:
+      type: Route
+  - service: OAuthServer
+    servicePublishingStrategy:
+      type: Route
+```
 
 ---
 

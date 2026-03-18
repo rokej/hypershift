@@ -65,11 +65,11 @@ Port-forward Maestro gRPC first: oc port-forward svc/maestro-grpc 8090:8090 -n m
 		}
 
 		applyOpts := maestroapply.Options{
-			MaestroServer:        opts.MaestroServer,
-			GRPCServer:           grpcServer,
-			ConsumerName:         opts.MaestroConsumer,
-			InsecureSkipVerify:   opts.MaestroInsecureTLS,
-			ServerHealthTimeout:  20 * time.Second,
+			MaestroServer:       opts.MaestroServer,
+			GRPCServer:          grpcServer,
+			ConsumerName:        opts.MaestroConsumer,
+			InsecureSkipVerify:  opts.MaestroInsecureTLS,
+			ServerHealthTimeout: 20 * time.Second,
 		}
 
 		if err := maestroapply.ApplyManifestsFromFile(ctx, filePath, applyOpts); err != nil {

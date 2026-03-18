@@ -25,6 +25,7 @@ import (
 	"github.com/openshift/hypershift/product-cli/cmd/apply"
 	"github.com/openshift/hypershift/product-cli/cmd/create"
 	"github.com/openshift/hypershift/product-cli/cmd/destroy"
+	"github.com/openshift/hypershift/product-cli/cmd/discover"
 	"github.com/openshift/hypershift/product-cli/cmd/get"
 	"github.com/openshift/hypershift/product-cli/cmd/list"
 	"github.com/openshift/hypershift/product-cli/cmd/patch"
@@ -52,6 +53,7 @@ func main() {
 	cmd.AddCommand(create.NewCommand())
 	cmd.AddCommand(destroy.NewCommand())
 	cmd.AddCommand(get.NewCommand())
+	cmd.AddCommand(discover.NewCommand())
 	cmd.AddCommand(list.NewCommand())
 	cmd.AddCommand(patch.NewCommand())
 	cmd.AddCommand(cliversion.NewVersionCommand())

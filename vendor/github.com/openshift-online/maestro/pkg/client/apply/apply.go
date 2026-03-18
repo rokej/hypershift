@@ -48,6 +48,7 @@ type WorkInfo struct {
 	ClusterName string // derived from work name (strips "-work" suffix)
 	Consumer    string // consumer name (empty when listing single consumer)
 	Created     string
+	Work        workv1.ManifestWork
 }
 
 // ListManifestWorks lists ManifestWorks for the given Maestro consumer.
@@ -81,6 +82,7 @@ func listManifestWorksForConsumer(ctx context.Context, opts Options, consumerNam
 			ClusterName: clusterName,
 			Consumer:    consumerName,
 			Created:     w.CreationTimestamp.Format("2006-01-02 15:04:05"),
+			Work:        w,
 		})
 	}
 	return result, nil
@@ -124,6 +126,7 @@ func listManifestWorksFromAllConsumers(ctx context.Context, opts Options) ([]Wor
 				ClusterName: clusterName,
 				Consumer:    consumerName,
 				Created:     w.CreationTimestamp.Format("2006-01-02 15:04:05"),
+				Work:        w,
 			})
 		}
 	}
@@ -255,6 +258,80 @@ func PatchHostedClusterInWork(ctx context.Context, opts Options, patchJSON []byt
 	_, err = workClient.ManifestWorks(opts.ConsumerName).Patch(ctx, opts.WorkName, types.MergePatchType, patchData, metav1.PatchOptions{})
 	if err != nil {
 		return fmt.Errorf("patch work: %w", err)
+	}
+	return nil
+}
+
+// ImportCluster creates a ReadOnly ManifestWork for an existing HostedCluster.
+// The agent observes the live resource and reports status without modifying it.
+func ImportCluster(ctx context.Context, opts Options, clusterName, namespace string) error {
+	if opts.ConsumerName == "" {
+		return fmt.Errorf("consumer name is required")
+	}
+
+	workName := opts.WorkName
+	if workName == "" {
+		workName = clusterName + "-work"
+	}
+
+	hc := &unstructured.Unstructured{}
+	hc.SetAPIVersion("hypershift.openshift.io/v1beta1")
+	hc.SetKind("HostedCluster")
+	hc.SetName(clusterName)
+	hc.SetNamespace(namespace)
+
+	mw := &workv1.ManifestWork{
+		ObjectMeta: metav1.ObjectMeta{Name: workName},
+		Spec: workv1.ManifestWorkSpec{
+			Workload: workv1.ManifestsTemplate{
+				Manifests: []workv1.Manifest{
+					{RawExtension: runtime.RawExtension{Object: hc}},
+				},
+			},
+			ManifestConfigs: []workv1.ManifestConfigOption{
+				{
+					ResourceIdentifier: workv1.ResourceIdentifier{
+						Group:     "hypershift.openshift.io",
+						Resource:  "hostedclusters",
+						Name:      clusterName,
+						Namespace: namespace,
+					},
+					UpdateStrategy: &workv1.UpdateStrategy{Type: workv1.UpdateStrategyTypeReadOnly},
+					FeedbackRules: []workv1.FeedbackRule{
+						{Type: workv1.JSONPathsType, JsonPaths: []workv1.JsonPath{{Name: "status", Path: ".status"}}},
+					},
+				},
+			},
+			DeleteOption: &workv1.DeleteOption{
+				PropagationPolicy: workv1.DeletePropagationPolicyTypeOrphan,
+			},
+		},
+	}
+
+	workClient, err := newWorkClient(ctx, opts)
+	if err != nil {
+		return fmt.Errorf("create work client: %w", err)
+	}
+
+	existing, err := workClient.ManifestWorks(opts.ConsumerName).Get(ctx, workName, metav1.GetOptions{})
+	if err == nil {
+		patchData, err := grpcsource.ToWorkPatch(existing, mw)
+		if err != nil {
+			return fmt.Errorf("build patch: %w", err)
+		}
+		_, err = workClient.ManifestWorks(opts.ConsumerName).Patch(ctx, workName, types.MergePatchType, patchData, metav1.PatchOptions{})
+		if err != nil {
+			return fmt.Errorf("patch work: %w", err)
+		}
+		return nil
+	}
+	if !apierrors.IsNotFound(err) {
+		return fmt.Errorf("get work: %w", err)
+	}
+
+	_, err = workClient.ManifestWorks(opts.ConsumerName).Create(ctx, mw, metav1.CreateOptions{})
+	if err != nil {
+		return fmt.Errorf("create work: %w", err)
 	}
 	return nil
 }

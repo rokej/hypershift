@@ -157,36 +157,36 @@ type RawCreateOptions struct {
 	TargetCluster                    string
 
 	// Maestro apply options: when set with TargetCluster, apply rendered output to Maestro
-	MaestroServer      string
-	MaestroGRPCServer  string
-	MaestroConsumer    string
-	MaestroInsecureTLS bool
-	SSHKeyFile                       string
-	ServiceCIDR                      []string
-	ClusterCIDR                      []string
-	MachineCIDR                      []string
-	DefaultDual                      bool
-	ExternalDNSDomain                string
-	Arch                             string
-	NodeSelector                     map[string]string
-	PodsLabels                       map[string]string
-	Tolerations                      []string
-	Wait                             bool
-	Timeout                          time.Duration
-	Log                              logr.Logger
-	SkipAPIBudgetVerification        bool
-	NodeUpgradeType                  hyperv1.UpgradeType
-	PausedUntil                      string
-	OLMCatalogPlacement              hyperv1.OLMCatalogPlacement
-	OLMDisableDefaultSources         bool
-	FeatureSet                       string
-	EnableClusterCapabilities        []string
-	DisableClusterCapabilities       []string
-	KubeAPIServerDNSName             string
-	DisableMultiNetwork              bool
-	VersionCheck                     bool
-	RedactBaseDomain                 bool
-	AllocateNodeCIDRs                bool
+	MaestroServer              string
+	MaestroGRPCServer          string
+	MaestroConsumer            string
+	MaestroInsecureTLS         bool
+	SSHKeyFile                 string
+	ServiceCIDR                []string
+	ClusterCIDR                []string
+	MachineCIDR                []string
+	DefaultDual                bool
+	ExternalDNSDomain          string
+	Arch                       string
+	NodeSelector               map[string]string
+	PodsLabels                 map[string]string
+	Tolerations                []string
+	Wait                       bool
+	Timeout                    time.Duration
+	Log                        logr.Logger
+	SkipAPIBudgetVerification  bool
+	NodeUpgradeType            hyperv1.UpgradeType
+	PausedUntil                string
+	OLMCatalogPlacement        hyperv1.OLMCatalogPlacement
+	OLMDisableDefaultSources   bool
+	FeatureSet                 string
+	EnableClusterCapabilities  []string
+	DisableClusterCapabilities []string
+	KubeAPIServerDNSName       string
+	DisableMultiNetwork        bool
+	VersionCheck               bool
+	RedactBaseDomain           bool
+	AllocateNodeCIDRs          bool
 
 	// BeforeApply is called immediately before resources are applied to the
 	// server, giving the user an opportunity to inspect or mutate the resources.

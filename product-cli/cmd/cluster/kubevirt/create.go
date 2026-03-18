@@ -7,6 +7,7 @@ import (
 
 	"github.com/openshift/hypershift/cmd/cluster/core"
 	"github.com/openshift/hypershift/cmd/cluster/kubevirt"
+
 	maestroapply "github.com/openshift-online/maestro/pkg/client/apply"
 
 	"github.com/spf13/cobra"
@@ -62,12 +63,12 @@ func NewCreateCommand(opts *core.RawCreateOptions) *cobra.Command {
 				grpcServer = "127.0.0.1:8090"
 			}
 			applyOpts := maestroapply.Options{
-				MaestroServer:        opts.MaestroServer,
-				GRPCServer:           grpcServer,
-				ConsumerName:         consumer,
-				WorkName:             opts.Name + "-work",
-				InsecureSkipVerify:   opts.MaestroInsecureTLS,
-				ServerHealthTimeout:  20 * time.Second,
+				MaestroServer:       opts.MaestroServer,
+				GRPCServer:          grpcServer,
+				ConsumerName:        consumer,
+				WorkName:            opts.Name + "-work",
+				InsecureSkipVerify:  opts.MaestroInsecureTLS,
+				ServerHealthTimeout: 20 * time.Second,
 			}
 			if err := maestroapply.ApplyManifestsFromFile(ctx, opts.RenderInto, applyOpts); err != nil {
 				opts.Log.Error(err, "Failed to apply manifests to Maestro")

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/openshift/hypershift/cmd/cluster/core"
+
 	maestroapply "github.com/openshift-online/maestro/pkg/client/apply"
 )
 
@@ -25,12 +26,12 @@ func DestroyViaMaestro(ctx context.Context, opts *core.DestroyOptions) (done boo
 	}
 	workName := opts.Name + "-work"
 	applyOpts := maestroapply.Options{
-		MaestroServer:        opts.MaestroServer,
-		GRPCServer:           grpcServer,
-		ConsumerName:         opts.MaestroConsumer,
-		WorkName:             workName,
-		InsecureSkipVerify:   opts.MaestroInsecureTLS,
-		ServerHealthTimeout:  20 * time.Second,
+		MaestroServer:       opts.MaestroServer,
+		GRPCServer:          grpcServer,
+		ConsumerName:        opts.MaestroConsumer,
+		WorkName:            workName,
+		InsecureSkipVerify:  opts.MaestroInsecureTLS,
+		ServerHealthTimeout: 20 * time.Second,
 	}
 	if err := maestroapply.DeleteManifestWork(ctx, applyOpts); err != nil {
 		return true, err
